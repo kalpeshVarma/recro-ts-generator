@@ -16,7 +16,6 @@ export const SummaryCards: React.FC<Props> = ({ rows }) => {
   const workingDays = rows.filter((r) => r.status === 'working').length;
   const totalHours = rows.reduce((sum, r) => sum + r.hours, 0);
   const nseHolidays = rows.filter((r) => r.status === 'holiday').length;
-  const weekends = rows.filter((r) => r.status === 'weekend').length;
   const leavesTaken = rows.filter((r) => r.status === 'leave' || r.status === 'half_day').length;
 
   const cards: Card[] = [
