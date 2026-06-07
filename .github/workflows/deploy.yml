@@ -2,10 +2,7 @@ name: Deploy to Render
 
 on:
   release:
-    types: [published]   # fires when a GitHub Release is published via the UI
-  push:
-    tags:
-      - 'v*'             # also fires when a tag is pushed via git CLI
+    types: [published]
   workflow_dispatch:
 
 jobs:
