@@ -16,8 +16,7 @@ import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import DownloadIcon from '@mui/icons-material/Download';
 import PreviewIcon from '@mui/icons-material/Visibility';
-import EmailIcon from '@mui/icons-material/Email';
-import SettingsIcon from '@mui/icons-material/Settings';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { HolidaySource } from '../types';
 
 const MONTH_NAMES = [
@@ -44,7 +43,6 @@ interface Props {
   hasRows: boolean;
   onPreview: () => void;
   onDownload: () => void;
-  onSend: () => void;
   onRegenerate: () => void;
   onSettings: () => void;
 }
@@ -52,7 +50,7 @@ interface Props {
 export const Header: React.FC<Props> = ({
   year, month, onPrev, onNext,
   holidaysEnabled, onToggleHolidays, holidaySource, onRefreshHolidays,
-  hasRows, onPreview, onDownload, onSend, onRegenerate, onSettings,
+  hasRows, onPreview, onDownload, onRegenerate, onSettings,
 }) => {
   const badge = SOURCE_BADGE[holidaySource];
 
@@ -127,17 +125,6 @@ export const Header: React.FC<Props> = ({
 
         <Button
           size="small"
-          startIcon={<EmailIcon />}
-          onClick={onSend}
-          disabled={!hasRows}
-          variant="outlined"
-          sx={{ borderColor: '#e2e8f0', color: '#475569', textTransform: 'none', borderRadius: '7px' }}
-        >
-          Send
-        </Button>
-
-        <Button
-          size="small"
           startIcon={<PreviewIcon />}
           onClick={onPreview}
           disabled={!hasRows}
@@ -158,9 +145,9 @@ export const Header: React.FC<Props> = ({
           .xlsx
         </Button>
 
-        <Tooltip title="Settings">
+        <Tooltip title="Account">
           <IconButton size="small" onClick={onSettings} sx={{ border: '1px solid #e2e8f0', borderRadius: '6px' }}>
-            <SettingsIcon fontSize="small" />
+            <AccountCircleIcon fontSize="small" />
           </IconButton>
         </Tooltip>
       </Toolbar>
