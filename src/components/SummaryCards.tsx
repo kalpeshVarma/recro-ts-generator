@@ -17,12 +17,13 @@ export const SummaryCards: React.FC<Props> = ({ rows }) => {
   const totalHours = rows.reduce((sum, r) => sum + r.hours, 0);
   const nseHolidays = rows.filter((r) => r.status === 'holiday').length;
   const weekends = rows.filter((r) => r.status === 'weekend').length;
+  const leavesTaken = rows.filter((r) => r.status === 'leave' || r.status === 'half_day').length;
 
   const cards: Card[] = [
-    { label: 'Working Days', value: workingDays, color: '#16a34a' },
-    { label: 'Total Hours',  value: totalHours,  color: '#4f46e5' },
-    { label: 'NSE Holidays', value: nseHolidays, color: '#d97706' },
-    { label: 'Weekends',     value: weekends,     color: '#64748b' },
+    { label: 'Working Days', value: workingDays,  color: '#16a34a' },
+    { label: 'Total Hours',  value: totalHours,   color: '#4f46e5' },
+    { label: 'Leaves Taken', value: leavesTaken,  color: '#e11d48' },
+    { label: 'NSE Holidays', value: nseHolidays,  color: '#d97706' },
   ];
 
   return (

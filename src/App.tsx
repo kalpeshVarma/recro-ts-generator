@@ -192,7 +192,12 @@ export default function App() {
       )}
 
       {showSettings && (
-        <SettingsModal config={config} onSave={handleSaveConfig} onClose={() => setShowSettings(false)} />
+        <SettingsModal
+          config={config}
+          isFirstTime={!localStorage.getItem('timesheet_config')}
+          onSave={handleSaveConfig}
+          onClose={() => setShowSettings(false)}
+        />
       )}
 
       {showSend && rows.length > 0 && (
