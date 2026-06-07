@@ -15,11 +15,12 @@ import { Config } from '../types';
 
 interface Props {
   config: Config;
+  isFirstTime?: boolean;
   onSave: (cfg: Config) => Promise<void>;
   onClose: () => void;
 }
 
-export const SettingsModal: React.FC<Props> = ({ config, onSave, onClose }) => {
+export const SettingsModal: React.FC<Props> = ({ config, isFirstTime = false, onSave, onClose }) => {
   const [draft, setDraft] = useState<Config>(config);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
@@ -52,7 +53,14 @@ export const SettingsModal: React.FC<Props> = ({ config, onSave, onClose }) => {
       PaperProps={{ sx: { borderRadius: '12px' } }}
     >
       <DialogTitle sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <Typography variant="h6" fontWeight={700}>Settings</Typography>
+        <Box>
+          <Typography variant="h6" fontWeight={700}>{isFirstTime ? 'Welcome' : 'Settings'}</Typography>
+          {isFirstTime && (
+            <Typography variant="body2" sx={{ color: '#64748b', mt: 0.25 }}>
+              Fill in your details to get started
+            </Typography>
+          )}
+        </Box>
         <IconButton size="small" onClick={onClose}><CloseIcon fontSize="small" /></IconButton>
       </DialogTitle>
 
