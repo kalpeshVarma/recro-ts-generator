@@ -1,0 +1,6 @@
+node_modules
+dist
+dist-server
+config.json
+.holidays_cache.json
+.env
