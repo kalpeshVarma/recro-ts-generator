@@ -38,7 +38,7 @@ export const TimesheetTable: React.FC<Props> = ({ rows, onChange }) => {
     <TableContainer
       component={Paper}
       elevation={0}
-      sx={{ border: '1px solid #e2e8f0', borderRadius: '10px', overflow: 'hidden' }}
+      sx={{ border: '1px solid #e2e8f0', borderRadius: '10px', overflowX: 'auto' }}
     >
       <Table size="small" stickyHeader>
         <TableHead>
