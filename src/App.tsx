@@ -153,7 +153,6 @@ export default function App() {
           hasRows={rows.length > 0}
           onPreview={() => setShowPreview(true)}
           onDownload={handleDownload}
-          onSend={() => setShowSend(true)}
           onRegenerate={() => load(year, month, holidaysEnabled)}
           onSettings={() => setShowSettings(true)}
         />
