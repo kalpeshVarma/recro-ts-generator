@@ -74,9 +74,35 @@ Gmail requires an **App Password** (not your regular password) for SMTP access.
 
 ### Step 2 — Add GitHub Secrets
 
-Go to your GitHub repo → **Settings** → **Secrets and variables** → **Actions**.
+You can add secrets via the `gh` CLI (recommended) or the GitHub UI.
 
-Add the following **Secrets** (sensitive values):
+#### Option A — `gh` CLI
+
+> **Prerequisites:** Install the GitHub CLI first if you haven't already.
+> - macOS: `brew install gh` then `gh auth login`
+> - Other platforms: https://cli.github.com/manual/installation
+
+Run these commands from inside the repo directory (replace values with your own):
+
+```bash
+# Prompts for value interactively — safer for passwords (nothing echoed to terminal)
+gh secret set GMAIL_APP_PASSWORD
+
+# Or pass value inline
+gh secret set GMAIL_USER        --body "you@gmail.com"
+gh secret set EMPLOYEE_NAME     --body "Your Full Name"
+gh secret set EMPLOYEE_NUMBER   --body "EMP001"
+gh secret set CLIENT_NAME       --body "Your Client Name"
+
+# Non-sensitive variable (shared Render URL — no need to deploy your own)
+gh variable set RENDER_URL --body "https://recro-ts-generator.onrender.com"
+```
+
+#### Option B — GitHub UI
+
+Go to your repo → **Settings** → **Secrets and variables** → **Actions**.
+
+Add the following **Secrets**:
 
 | Secret name | Value |
 |---|---|
@@ -86,13 +112,11 @@ Add the following **Secrets** (sensitive values):
 | `EMPLOYEE_NUMBER` | Your employee number |
 | `CLIENT_NAME` | Your client / project name |
 
-Add the following **Variable** (non-sensitive):
+Switch to the **Variables** tab and add:
 
 | Variable name | Value |
 |---|---|
-| `RENDER_URL` | Your Render app URL, e.g. `https://your-app-name.onrender.com` |
-
-> Variables are under the same **Secrets and variables** page — switch to the **Variables** tab.
+| `RENDER_URL` | `https://recro-ts-generator.onrender.com` |
 
 ### Step 3 — Test it
 
@@ -100,11 +124,12 @@ After adding secrets, go to **Actions** → **Monthly Timesheet Reminder** → *
 
 ### Forking this project
 
-If you fork this repo and want your own reminder:
+No need to deploy your own server — the shared Render instance at `https://recro-ts-generator.onrender.com` is stateless and works for everyone. Your employee details are passed per-request and never stored on the server.
 
-1. Deploy your fork to Render (see above)
+1. Fork this repo on GitHub
 2. Follow Steps 1–3 above with your own Gmail and employee details
-3. The workflow reads everything from secrets — no code changes needed
+3. Set `RENDER_URL` to `https://recro-ts-generator.onrender.com`
+4. The workflow runs on GitHub's servers and emails your timesheet to you every 26th
 
 ---
 
