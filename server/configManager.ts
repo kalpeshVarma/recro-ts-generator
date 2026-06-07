@@ -23,7 +23,7 @@ export interface Config {
 }
 
 const DEFAULT: Config = {
-  employee: { number: 'RTPL1443', name: 'Kalpesh Varma', client: 'Upstox' },
+  employee: { number: '', name: '', client: '' },
   email: {
     smtp_host: 'smtp.zoho.in',
     smtp_port: 587,
