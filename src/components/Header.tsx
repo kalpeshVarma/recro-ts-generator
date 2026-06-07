@@ -8,12 +8,14 @@ import {
   Button,
   Chip,
   Switch,
-  FormControlLabel,
   Tooltip,
+  useTheme,
+  useMediaQuery,
 } from '@mui/material';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import RefreshIcon from '@mui/icons-material/Refresh';
+import SyncIcon from '@mui/icons-material/Sync';
 import DownloadIcon from '@mui/icons-material/Download';
 import PreviewIcon from '@mui/icons-material/Visibility';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
@@ -42,7 +44,6 @@ interface Props {
   onRefreshHolidays: () => void;
   hasRows: boolean;
   onPreview: () => void;
-  onDownload: () => void;
   onRegenerate: () => void;
   onSettings: () => void;
 }
@@ -50,8 +51,10 @@ interface Props {
 export const Header: React.FC<Props> = ({
   year, month, onPrev, onNext,
   holidaysEnabled, onToggleHolidays, holidaySource, onRefreshHolidays,
-  hasRows, onPreview, onDownload, onRegenerate, onSettings,
+  hasRows, onPreview, onRegenerate, onSettings,
 }) => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const badge = SOURCE_BADGE[holidaySource];
 
   return (
@@ -60,17 +63,22 @@ export const Header: React.FC<Props> = ({
       elevation={0}
       sx={{ background: '#fff', borderBottom: '1px solid #e2e8f0', color: '#1e293b' }}
     >
-      <Toolbar sx={{ gap: 2, flexWrap: 'wrap', minHeight: '64px !important', py: 1 }}>
+      <Toolbar sx={{ gap: 1, minHeight: '56px !important', px: { xs: 1.5, sm: 3 } }}>
+
         {/* Logo */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25, mr: 1 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mr: 1, flexShrink: 0 }}>
           <Box sx={{
-            width: 32, height: 32, background: '#6366f1', borderRadius: '8px',
+            width: 30, height: 30, background: '#6366f1', borderRadius: '8px',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            color: '#fff', fontWeight: 700, fontSize: '14px',
+            color: '#fff', fontWeight: 700, fontSize: '13px',
           }}>
             R
           </Box>
-          <Typography variant="subtitle1" fontWeight={700} sx={{ color: '#1e293b', whiteSpace: 'nowrap' }}>
+          <Typography
+            variant="subtitle2"
+            fontWeight={700}
+            sx={{ color: '#1e293b', whiteSpace: 'nowrap', display: { xs: 'none', sm: 'block' } }}
+          >
             Timesheet Generator
           </Typography>
         </Box>
@@ -80,8 +88,14 @@ export const Header: React.FC<Props> = ({
           <IconButton size="small" onClick={onPrev} sx={{ border: '1px solid #e2e8f0', borderRadius: '6px' }}>
             <NavigateBeforeIcon fontSize="small" />
           </IconButton>
-          <Typography variant="body1" fontWeight={600} sx={{ minWidth: 130, textAlign: 'center', color: '#1e293b' }}>
-            {MONTH_NAMES[month - 1]} {year}
+          <Typography
+            variant="body2"
+            fontWeight={600}
+            sx={{ minWidth: { xs: 80, sm: 130 }, textAlign: 'center', color: '#1e293b' }}
+          >
+            {isMobile
+              ? `${MONTH_NAMES[month - 1].slice(0, 3)} ${year}`
+              : `${MONTH_NAMES[month - 1]} ${year}`}
           </Typography>
           <IconButton size="small" onClick={onNext} sx={{ border: '1px solid #e2e8f0', borderRadius: '6px' }}>
             <NavigateNextIcon fontSize="small" />
@@ -90,66 +104,85 @@ export const Header: React.FC<Props> = ({
 
         <Box sx={{ flex: 1 }} />
 
-        {/* NSE toggle + badge */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
-          <FormControlLabel
-            control={
-              <Switch
-                checked={holidaysEnabled}
-                onChange={onToggleHolidays}
+        {/* NSE toggle */}
+        <Tooltip title={`NSE Holidays — ${badge.label}`}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+            <Switch
+              checked={holidaysEnabled}
+              onChange={onToggleHolidays}
+              size="small"
+              sx={{ '& .MuiSwitch-thumb': { background: holidaysEnabled ? '#6366f1' : undefined } }}
+            />
+            <Typography
+              variant="body2"
+              fontWeight={500}
+              sx={{ color: '#475569', display: { xs: 'none', md: 'block' } }}
+            >
+              NSE
+            </Typography>
+            <Chip
+              label={badge.label}
+              color={badge.color}
+              size="small"
+              sx={{ height: 20, fontSize: '10px', fontWeight: 600, display: { xs: 'none', sm: 'flex' } }}
+            />
+            <Tooltip title="Refresh holiday data">
+              <IconButton
                 size="small"
-                sx={{ '& .MuiSwitch-thumb': { background: holidaysEnabled ? '#6366f1' : undefined } }}
-              />
-            }
-            label={<Typography variant="body2" fontWeight={500} sx={{ color: '#475569' }}>NSE Holidays</Typography>}
-            sx={{ m: 0 }}
-          />
-          <Chip label={badge.label} color={badge.color} size="small" sx={{ height: 22, fontSize: '11px', fontWeight: 600 }} />
-          <Tooltip title="Force refresh holiday data">
-            <IconButton size="small" onClick={onRefreshHolidays} sx={{ color: '#64748b' }}>
-              <RefreshIcon fontSize="small" />
+                onClick={onRefreshHolidays}
+                sx={{ color: '#94a3b8', display: { xs: 'none', sm: 'flex' } }}
+              >
+                <RefreshIcon sx={{ fontSize: 16 }} />
+              </IconButton>
+            </Tooltip>
+          </Box>
+        </Tooltip>
+
+        {/* Regenerate */}
+        <Tooltip title="Regenerate timesheet">
+          <span>
+            <IconButton
+              size="small"
+              onClick={onRegenerate}
+              sx={{ border: '1px solid #e2e8f0', borderRadius: '6px', color: '#64748b' }}
+            >
+              <SyncIcon fontSize="small" />
             </IconButton>
-          </Tooltip>
-        </Box>
+          </span>
+        </Tooltip>
 
-        {/* Action buttons */}
-        <Button
-          size="small"
-          startIcon={<RefreshIcon />}
-          onClick={onRegenerate}
-          variant="outlined"
-          sx={{ borderColor: '#e2e8f0', color: '#475569', textTransform: 'none', borderRadius: '7px' }}
-        >
-          Regen
-        </Button>
+        {/* Preview & Download — full button on sm+, icon only on xs */}
+        <Tooltip title="Preview & Download">
+          <span>
+            <Button
+              size="small"
+              startIcon={<PreviewIcon />}
+              onClick={onPreview}
+              disabled={!hasRows}
+              variant="contained"
+              sx={{
+                background: '#6366f1',
+                textTransform: 'none',
+                borderRadius: '7px',
+                '&:hover': { background: '#4f46e5' },
+                minWidth: 0,
+                px: { xs: 1, sm: 2 },
+              }}
+            >
+              <Box component="span" sx={{ display: { xs: 'none', sm: 'inline' } }}>
+                Preview & Download
+              </Box>
+            </Button>
+          </span>
+        </Tooltip>
 
-        <Button
-          size="small"
-          startIcon={<PreviewIcon />}
-          onClick={onPreview}
-          disabled={!hasRows}
-          variant="outlined"
-          sx={{ borderColor: '#e2e8f0', color: '#475569', textTransform: 'none', borderRadius: '7px' }}
-        >
-          Preview
-        </Button>
-
-        <Button
-          size="small"
-          startIcon={<DownloadIcon />}
-          onClick={onDownload}
-          disabled={!hasRows}
-          variant="contained"
-          sx={{ background: '#6366f1', textTransform: 'none', borderRadius: '7px', '&:hover': { background: '#4f46e5' } }}
-        >
-          .xlsx
-        </Button>
-
+        {/* Account */}
         <Tooltip title="Account">
           <IconButton size="small" onClick={onSettings} sx={{ border: '1px solid #e2e8f0', borderRadius: '6px' }}>
             <AccountCircleIcon fontSize="small" />
           </IconButton>
         </Tooltip>
+
       </Toolbar>
     </AppBar>
   );
