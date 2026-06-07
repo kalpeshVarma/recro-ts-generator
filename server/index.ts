@@ -1,8 +1,52 @@
 import express from 'express';
 import path from 'path';
+import { z } from 'zod';
 import { getHolidays, refreshHolidays } from './holidaysFetcher';
-import { generateMonthData, exportToExcel, Row } from './generator';
+import { generateMonthData, exportToExcel } from './generator';
 import { sendMail } from './mailer';
+
+const EmployeeSchema = z.object({
+  number: z.string(),
+  name:   z.string(),
+  client: z.string(),
+});
+
+const RowSchema = z.object({
+  date:         z.string(),
+  day:          z.string(),
+  status:       z.enum(['working', 'weekend', 'holiday', 'leave', 'half_day']),
+  hours:        z.number(),
+  comment:      z.string().nullable().optional(),
+  holiday_name: z.string().nullable().optional(),
+});
+
+const ExportSchema = z.object({
+  year:     z.number().int().min(2000).max(2100),
+  month:    z.number().int().min(1).max(12),
+  rows:     z.array(RowSchema),
+  employee: EmployeeSchema,
+});
+
+const SmtpSchema = z.object({
+  host:       z.string(),
+  port:       z.number().int(),
+  username:   z.string(),
+  password:   z.string().min(1, 'App password not configured in Settings'),
+  from_email: z.string(),
+});
+
+const SendSchema = z.object({
+  year:     z.number().int().min(2000).max(2100),
+  month:    z.number().int().min(1).max(12),
+  rows:     z.array(RowSchema),
+  employee: EmployeeSchema,
+  to:       z.string(),
+  cc:       z.string().optional().default(''),
+  bcc:      z.string().optional().default(''),
+  subject:  z.string(),
+  body:     z.string().optional().default(''),
+  smtp:     SmtpSchema,
+});
 
 const app = express();
 const PORT = 3001;
@@ -56,10 +100,9 @@ app.post('/api/holidays/:year/refresh', async (req, res) => {
 
 // POST /api/export
 app.post('/api/export', async (req, res) => {
-  const { year, month, rows, employee } = req.body as {
-    year: number; month: number; rows: Row[];
-    employee: { number: string; name: string; client: string };
-  };
+  const parsed = ExportSchema.safeParse(req.body);
+  if (!parsed.success) { res.status(400).json({ ok: false, error: parsed.error.issues[0].message }); return; }
+  const { year, month, rows, employee } = parsed.data;
   const buf = await exportToExcel(rows, year, month, employee.number, employee.name, employee.client);
   const filename = `${employee.name} Timesheet ${MONTH_NAMES[month - 1]} ${year}.xlsx`;
 
@@ -70,12 +113,9 @@ app.post('/api/export', async (req, res) => {
 
 // POST /api/send
 app.post('/api/send', async (req, res) => {
-  const { year, month, rows, employee, to, cc, bcc, subject, body, smtp } = req.body;
-
-  if (!smtp?.password) {
-    res.status(400).json({ ok: false, error: 'App password not configured in Settings' });
-    return;
-  }
+  const parsed = SendSchema.safeParse(req.body);
+  if (!parsed.success) { res.status(400).json({ ok: false, error: parsed.error.issues[0].message }); return; }
+  const { year, month, rows, employee, to, cc, bcc, subject, body, smtp } = parsed.data;
 
   try {
     const buf = await exportToExcel(rows, year, month, employee.number, employee.name, employee.client);
@@ -83,12 +123,12 @@ app.post('/api/send', async (req, res) => {
 
     const split = (s: string) => s ? s.split(',').map((x: string) => x.trim()).filter(Boolean) : [];
     const toList  = split(to);
-    const ccList  = split(cc  ?? '');
-    const bccList = split(bcc ?? '');
+    const ccList  = split(cc);
+    const bccList = split(bcc);
 
     await sendMail(
       { host: smtp.host, port: smtp.port, user: smtp.username, password: smtp.password, from: smtp.from_email || smtp.username },
-      toList, ccList, bccList, subject, body || '', buf, filename,
+      toList, ccList, bccList, subject, body, buf, filename,
     );
 
     res.json({ ok: true });
