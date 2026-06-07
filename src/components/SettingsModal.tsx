@@ -24,6 +24,7 @@ export const SettingsModal: React.FC<Props> = ({ config, onSave, onClose }) => {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { setDraft(config); }, [config]);
 
   const setEmployee = (patch: Partial<Config['employee']>) =>

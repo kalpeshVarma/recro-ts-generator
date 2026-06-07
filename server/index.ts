@@ -2,7 +2,7 @@ import express from 'express';
 import path from 'path';
 import { z } from 'zod';
 import { getHolidays, refreshHolidays } from './holidaysFetcher';
-import { generateMonthData, exportToExcel, Row } from './generator';
+import { generateMonthData, exportToExcel } from './generator';
 import { sendMail } from './mailer';
 
 const EmployeeSchema = z.object({
