@@ -1,13 +1,22 @@
 name: Deploy to Render
 
 on:
+  release:
+    types: [published]   # fires when a GitHub Release is published via the UI
   push:
     tags:
-      - 'v*'
+      - 'v*'             # also fires when a tag is pushed via git CLI
+  workflow_dispatch:
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Trigger Render deploy
-        run: curl -s "${{ secrets.RENDER_DEPLOY_HOOK }}"
+        run: |
+          if [ -z "${{ secrets.RENDER_DEPLOY_HOOK }}" ]; then
+            echo "ERROR: RENDER_DEPLOY_HOOK secret is not set"
+            exit 1
+          fi
+          curl -f -s "${{ secrets.RENDER_DEPLOY_HOOK }}"
+          echo "Deploy triggered successfully"
