@@ -1,0 +1,32 @@
+name: Monthly Timesheet Reminder
+
+on:
+  schedule:
+    - cron: '30 3 26 * *'  # 9:00 AM IST (UTC+5:30) on the 26th of every month
+  workflow_dispatch:        # Manual trigger — use this to test before the 26th
+
+jobs:
+  send-reminder:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Send timesheet reminder
+        env:
+          GMAIL_USER: ${{ secrets.GMAIL_USER }}
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+          EMPLOYEE_NAME: ${{ secrets.EMPLOYEE_NAME }}
+          EMPLOYEE_NUMBER: ${{ secrets.EMPLOYEE_NUMBER }}
+          CLIENT_NAME: ${{ secrets.CLIENT_NAME }}
+          RENDER_URL: ${{ vars.RENDER_URL }}
+        run: python .github/scripts/send-reminder.py
