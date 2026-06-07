@@ -152,7 +152,6 @@ export default function App() {
           holidaySource={holidaySource} onRefreshHolidays={handleRefreshHolidays}
           hasRows={rows.length > 0}
           onPreview={() => setShowPreview(true)}
-          onDownload={handleDownload}
           onRegenerate={() => load(year, month, holidaysEnabled)}
           onSettings={() => setShowSettings(true)}
         />

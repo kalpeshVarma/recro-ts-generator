@@ -14,7 +14,6 @@ import {
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import RefreshIcon from '@mui/icons-material/Refresh';
-import DownloadIcon from '@mui/icons-material/Download';
 import PreviewIcon from '@mui/icons-material/Visibility';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { HolidaySource } from '../types';
@@ -42,7 +41,6 @@ interface Props {
   onRefreshHolidays: () => void;
   hasRows: boolean;
   onPreview: () => void;
-  onDownload: () => void;
   onRegenerate: () => void;
   onSettings: () => void;
 }
@@ -50,7 +48,7 @@ interface Props {
 export const Header: React.FC<Props> = ({
   year, month, onPrev, onNext,
   holidaysEnabled, onToggleHolidays, holidaySource, onRefreshHolidays,
-  hasRows, onPreview, onDownload, onRegenerate, onSettings,
+  hasRows, onPreview, onRegenerate, onSettings,
 }) => {
   const badge = SOURCE_BADGE[holidaySource];
 
@@ -128,21 +126,10 @@ export const Header: React.FC<Props> = ({
           startIcon={<PreviewIcon />}
           onClick={onPreview}
           disabled={!hasRows}
-          variant="outlined"
-          sx={{ borderColor: '#e2e8f0', color: '#475569', textTransform: 'none', borderRadius: '7px' }}
-        >
-          Preview
-        </Button>
-
-        <Button
-          size="small"
-          startIcon={<DownloadIcon />}
-          onClick={onDownload}
-          disabled={!hasRows}
           variant="contained"
           sx={{ background: '#6366f1', textTransform: 'none', borderRadius: '7px', '&:hover': { background: '#4f46e5' } }}
         >
-          .xlsx
+          Preview & Download
         </Button>
 
         <Tooltip title="Account">
