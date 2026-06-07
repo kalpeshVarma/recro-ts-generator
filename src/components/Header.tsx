@@ -16,7 +16,6 @@ import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import SyncIcon from '@mui/icons-material/Sync';
-import DownloadIcon from '@mui/icons-material/Download';
 import PreviewIcon from '@mui/icons-material/Visibility';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { HolidaySource } from '../types';
